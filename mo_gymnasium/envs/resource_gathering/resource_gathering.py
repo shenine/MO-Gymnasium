@@ -285,16 +285,20 @@ class ResourceGathering(gym.Env, EzPickle):
         cell = self.get_map_value(self.current_pos)
         if cell == "R1":
             self.has_gold = 1
+            vec_reward[1] = 0.5
         elif cell == "R2":
             self.has_gem = 1
+            vec_reward[2] = 0.5
         elif cell == "E1" or cell == "E2":
-            if self.np_random.random() < 0.1:
-                vec_reward[0] = -1.0
-                done = True
+            vec_reward[0] = -1.0
+            done = True
+            #if self.np_random.random() < 0.1:
+            #    vec_reward[0] = -1.0
+            #    done = True
         elif cell == "H":
             done = True
-            vec_reward[1] = self.has_gold
-            vec_reward[2] = self.has_gem
+            vec_reward[1] = 0.5*self.has_gold
+            vec_reward[2] = 0.5*self.has_gem
 
         state = self.get_state()
         if self.render_mode == "human":
