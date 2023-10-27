@@ -55,9 +55,9 @@ class ResourceGathering(gym.Env, EzPickle):
         # The map of resource gathering env
         self.map = np.array(
             [
-                [" ", " ", "R1", "E2", " "],
-                [" ", " ", "E1", " ", "R2"],
                 [" ", " ", " ", " ", " "],
+                ["R1", " ", " ", " ", "R2"],
+                [" ", "E1", " ", "E2", " "],
                 [" ", " ", " ", " ", " "],
                 [" ", " ", "H", " ", " "],
             ]
