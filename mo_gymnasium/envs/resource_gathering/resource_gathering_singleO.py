@@ -47,7 +47,7 @@ class ResourceGathering(gym.Env, EzPickle):
 
     metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 4}
 
-    def __init__(self, render_mode: Optional[str] = "rgb_array"): #None):
+    def __init__(self, render_mode: Optional[str] = None): #"rgb_array"): 
         EzPickle.__init__(self, render_mode)
 
         self.render_mode = render_mode
@@ -109,14 +109,14 @@ class ResourceGathering(gym.Env, EzPickle):
             gym.logger.warn(
                 "You are calling render method without specifying any render mode. "
                 "You can specify the render_mode at initialization, "
-                f'e.g. mo_gym.make("{self.spec.id}", render_mode="rgb_array")'
+                f'e.g. mo_gym.make("{self.spec.id}", render_mode="{self.render_mode}")'
             )
             return
 
         if self.window is None:
             pygame.init()
 
-            if self.render_mode == "human":
+            if self.render_mode == self.render_mode:
                 pygame.display.init()
                 pygame.display.set_caption("Resource Gathering")
                 self.window = pygame.display.set_mode(self.window_size)
@@ -181,17 +181,16 @@ class ResourceGathering(gym.Env, EzPickle):
         last_action = self.last_action if self.last_action is not None else 2
         self.window.blit(self.elf_images[last_action], self.current_pos[::-1] * self.cell_size[0])
 
-        if self.render_mode == "human":
+        if self.render_mode == self.render_mode:
             pygame.event.pump()
             pygame.display.update()
             self.clock.tick(self.metadata["render_fps"])
-        elif self.render_mode == "rgb_array":  # rgb_array
+        elif self.render_mode == self.render_mode:  # rgb_array
             return np.transpose(np.array(pygame.surfarray.pixels3d(self.window)), axes=(1, 0, 2))
 
     def get_state(self):
-        pos = self.current_pos.copy()
-        #state = np.concatenate((pos), np.array([self.has_gold], dtype=np.int32)) #, self.has_gem]
-        return pos
+        state, vec_reward = self.current_pos.copy()
+        return state, vec_reward
 
     def reset(self, seed=None, **kwargs):
         super().reset(seed=seed)
@@ -201,10 +200,10 @@ class ResourceGathering(gym.Env, EzPickle):
         self.has_gold = 0
         self.has_friend = 0
         self.step_count = 0
-        state = self.get_state()
-        if self.render_mode == "human":
+        state, vec_reward = self.get_state()
+        if self.render_mode == "rgb_array":
             self.render()
-        return state, {}
+        return state, vec_reward, {}
 
     def step(self, action):
         action = int(action)
@@ -235,7 +234,7 @@ class ResourceGathering(gym.Env, EzPickle):
                 
 
         state = self.get_state()
-        if self.render_mode == "human":
+        if self.render_mode == "rgb_array":
             self.render()
         return state, vec_reward, done, False, {}
 
@@ -248,7 +247,7 @@ class ResourceGathering(gym.Env, EzPickle):
 if __name__ == "__main__":
     import mo_gymnasium as mo_gym
 
-    env = mo_gym.make("resource-gathering-singleO", render_mode="human")
+    env = mo_gym.make("resource-gathering-singleO", render_mode="rgb_array")
     terminated = False
     env.reset()
     while True:
